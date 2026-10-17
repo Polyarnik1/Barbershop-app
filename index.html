@@ -60,6 +60,7 @@ button.day:active{border-color:var(--red)}
 .no{background:none;border:2px solid var(--muted);padding:6px 12px;font-weight:700}
 .info div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .info span{color:var(--muted)}
+.warn{background:var(--panel);border-left:5px solid var(--red);padding:10px 12px;font-size:.85rem;margin:0 0 14px}
 .foot{margin-top:18px;color:var(--muted);font-size:.8rem}
 .dock{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line)}
 .cta{display:flex;align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:10px 16px}
@@ -117,6 +118,8 @@ function parseMine(str){  // мои записи: id.услуга.мастер.�
     .filter(function(b){return !isNaN(b.id)&&b.d});
 }
 var mine=parseMine(new URLSearchParams(location.search).get('u'));
+var stamp=+new URLSearchParams(location.search).get('t')||0;  // когда бот сформировал ссылку
+var stale=stamp>0&&(Date.now()/1000-stamp>600);                // старше 10 минут: данные могли устареть
 // Услуги и мастера: те же, что в bot.py. Меняете там, меняйте и здесь.
 var S=[["Мужская стрижка",45,1500],["Стрижка машинкой",30,900],["Оформление бороды",30,1000],
        ["Стрижка + борода",75,2200],["Королевское бритьё",45,1400],["Камуфляж седины",40,1200]];
@@ -210,7 +213,8 @@ function infoHtml(){
 
 function render(){
   var c=document.getElementById('content');
-  c.innerHTML=st.tab==='book'?bookHtml():st.tab==='price'?priceHtml():st.tab==='team'?teamHtml():st.tab==='mine'?mineHtml():infoHtml();
+  var warn=(stale&&(st.tab==='book'||st.tab==='mine'))?'<p class="warn">Данные о записях могли устареть. Закройте приложение и откройте его заново через кнопку «Запись в приложении» в боте.</p>':'';
+  c.innerHTML=warn+(st.tab==='book'?bookHtml():st.tab==='price'?priceHtml():st.tab==='team'?teamHtml():st.tab==='mine'?mineHtml():infoHtml());
   document.getElementById('tabs').innerHTML=TABS.map(function(t){return '<button class="tab'+(st.tab===t[0]?' on':'')+'" data-a="tab" data-v="'+t[0]+'"><svg viewBox="0 0 24 24">'+t[2]+'</svg>'+t[1]+'</button>'}).join('');
   var ready=st.tab==='book'&&st.s!==null&&st.d!==null&&st.t!==null;
   document.getElementById('cta').hidden=!ready;
