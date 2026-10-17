@@ -99,7 +99,7 @@ function freeSlots(busy,master,dc,duration,now){
 /*PURE-END*/
 
 var tg=window.Telegram&&window.Telegram.WebApp;
-var inTg=!!(tg&&tg.initData);
+var inTg=!!(tg&&tg.platform&&tg.platform!=='unknown');  // у кнопок клавиатуры initData пустой, поэтому смотрим на платформу
 if(tg){try{tg.ready();tg.expand();tg.setHeaderColor('#0D141C')}catch(e){}}
 var light=(tg&&tg.colorScheme)?tg.colorScheme==='light':window.matchMedia('(prefers-color-scheme: light)').matches;
 document.documentElement.dataset.theme=light?'light':'dark';
