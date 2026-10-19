@@ -135,7 +135,7 @@ var TABS=[["book","Запись",'<rect x="3" y="5" width="18" height="16" rx="2
 var st={tab:'book',s:null,m:-1,d:null,t:null,ask:null,note:null};  // m = -1: любой мастер
 
 var zp=new URLSearchParams(location.search).get('z');
-var SALON_TZ=(zp!==null&&zp!==''&&!isNaN(+zp))?+zp:3;  // часовой пояс салона передаёт бот (по умолчанию Москва)
+var SALON_TZ=(zp!==null&&zp!==''&&!isNaN(+zp))?+zp:5;  // часовой пояс салона передаёт бот (по умолчанию Екатеринбург)
 function tzLabel(){return 'UTC'+(SALON_TZ>=0?'+':'')+SALON_TZ}
 function salonNow(){return new Date(Date.now()+(SALON_TZ*60+new Date().getTimezoneOffset())*60000)}
 function money(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽'}
