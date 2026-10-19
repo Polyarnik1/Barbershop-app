@@ -134,6 +134,8 @@ var TABS=[["book","Запись",'<rect x="3" y="5" width="18" height="16" rx="2
           ["info","Контакты",'<path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>']];
 var st={tab:'book',s:null,m:-1,d:null,t:null,ask:null,note:null};  // m = -1: любой мастер
 
+var SALON_TZ=3;  // время салона: Москва, UTC+3, чтобы у всех клиентов окна считались одинаково
+function salonNow(){return new Date(Date.now()+(SALON_TZ*60+new Date().getTimezoneOffset())*60000)}
 function money(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽'}
 function dur(m){var h=Math.floor(m/60),r=m%60;return h?(r?h+' ч '+r+' мин':h+' ч'):r+' мин'}
 function dayDate(dc){return new Date(+dc.slice(0,4),+dc.slice(4,6)-1,+dc.slice(6,8))}
@@ -171,7 +173,7 @@ function calendar(now){
 }
 
 function bookHtml(){
-  var now=new Date(),h='<h1>Запись</h1>';
+  var now=salonNow(),h='<h1>Запись</h1>';
   h+=block(1,'Услуга',S.map(function(x,i){return '<button class="row'+(st.s===i?' on':'')+'" data-a="svc" data-v="'+i+'"><span>'+x[0]+'<small>'+dur(x[1])+'</small></span><b>'+money(x[2])+'</b></button>'}).join(''));
   var mm='<div class="mst"><button class="m'+(st.m<0?' on':'')+'" data-a="mst" data-v="-1">'+ring(-1)+'Любой</button>'
     +M.map(function(x,j){return '<button class="m'+(st.m===j?' on':'')+'" data-a="mst" data-v="'+j+'">'+ring(j)+x[0]+'</button>'}).join('')+'</div>';
@@ -219,7 +221,7 @@ function render(){
   var ready=st.tab==='book'&&st.s!==null&&st.d!==null&&st.t!==null;
   document.getElementById('cta').hidden=!ready;
   if(ready){
-    var now=new Date(),m=resolveMaster(st.m,st.d,S[st.s][1],st.t,now);
+    var now=salonNow(),m=resolveMaster(st.m,st.d,S[st.s][1],st.t,now);
     document.getElementById('sum').innerHTML='<b>'+S[st.s][0]+', '+money(S[st.s][2])+'</b>'+dayLabel(st.d)+', '+hhmm(st.t)+(m>=0?' · '+M[m][0]:'');
   }
 }
@@ -245,7 +247,7 @@ function cancel(id){
   else{st.ask=null;st.note='Демо-режим: бот получил бы '+payload;render()}
 }
 function send(){
-  var now=new Date(),m=resolveMaster(st.m,st.d,S[st.s][1],st.t,now);
+  var now=salonNow(),m=resolveMaster(st.m,st.d,S[st.s][1],st.t,now);
   var payload=JSON.stringify({s:st.s,m:m,d:st.d,t:code(st.t)});
   if(inTg){tg.sendData(payload)}  // приложение закроется, бот получит данные
   else{document.getElementById('sum').innerHTML='<b>Демо-режим</b>Бот получил бы: '+payload}
